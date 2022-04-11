@@ -1,3 +1,6 @@
+import logging
+import traceback
+import warnings
 from tqdm import tqdm
 
 import torch
@@ -94,4 +97,18 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    warnings.filterwarnings("ignore")
+    logging.basicConfig(
+        level=logging.INFO,
+        filename="logs/train_model.log",
+        filemode="a",
+        format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
+    )
+    logger = logging.getLogger(__name__)
+
+    try:
+        run()
+    except Exception as e:
+        print("Exception occured. Check logs.")
+        logger.error(f"Failed to run workflow due to error:\n{e}")
+        logger.error(traceback.format_exc())

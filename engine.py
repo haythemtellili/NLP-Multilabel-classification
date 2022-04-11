@@ -13,7 +13,6 @@ def train_fn(data_loader, model, optimizer, device, scheduler):
     """
     Function to train the model
     """
-
     train_loss = 0.0
     model.train()
     for bi, d in tqdm(enumerate(data_loader), total=len(data_loader)):
