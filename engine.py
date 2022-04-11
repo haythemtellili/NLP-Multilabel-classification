@@ -11,8 +11,7 @@ def loss_fn(outputs, labels):
 
 def train_fn(data_loader, model, optimizer, device, scheduler):
     """
-    Modified from Abhishek Thakur's BERT example:
-    https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
+    Function to train the model
     """
 
     train_loss = 0.0
@@ -39,8 +38,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler):
 
 def eval_fn(data_loader, model, device):
     """
-    Modified from Abhishek Thakur's BERT example:
-    https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
+    Function to evaluate the model
     """
     eval_loss = 0.0
     model.eval()
