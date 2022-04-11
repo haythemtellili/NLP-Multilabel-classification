@@ -14,45 +14,48 @@ from skmultilearn.model_selection import IterativeStratification
 import torch
 import torch.nn as nn
 
+
 def load_data(path_data):
-        """
-        convert parquet files to dataframe
-        """
-        df_data = pd.DataFrame(columns=["url", "target", "day"])
-        for filename in os.listdir(path_data):
-            if filename.endswith(".parquet"):
-                df_data = pd.concat(
-                    [
-                        df_data,
-                        pd.read_parquet(
-                            os.path.join(path_data, filename), engine="pyarrow"
-                        ),
-                    ],
-                    ignore_index=True,
-                )
-        return df_data
-    
+    """
+    convert parquet files to dataframe
+    """
+    df_data = pd.DataFrame(columns=["url", "target", "day"])
+    for filename in os.listdir(path_data):
+        if filename.endswith(".parquet"):
+            df_data = pd.concat(
+                [
+                    df_data,
+                    pd.read_parquet(
+                        os.path.join(path_data, filename), engine="pyarrow"
+                    ),
+                ],
+                ignore_index=True,
+            )
+    return df_data
+
+
 def preprocess_data(data, min_tag_freq=20):
     # Remove duplicated sample
     data = data[~data["url"].duplicated()].reset_index(drop=True)
     # clean url
     # data['url'] = data['url'].apply(lambda x : parse_url(x))
     # Filter tags that have fewer than <min_tag_freq> occurrences
-    targets = [item for sublist in list(data['target']) for item in sublist]
+    targets = [item for sublist in list(data["target"]) for item in sublist]
     d = Counter(targets)
 
-    tags_above_freq = Counter(tag for tag in d 
-                              if d[tag] >= min_tag_freq)
+    tags_above_freq = Counter(tag for tag in d if d[tag] >= min_tag_freq)
 
     include = list(tags_above_freq.keys())
-    data['target'] = data['target'].apply(filter, include=include)
+    data["target"] = data["target"].apply(filter, include=include)
     # Remove sample with no more remaining tags
-    data = data[data['target'].map(len) > 0]
-    
+    data = data[data["target"].map(len) > 0]
+
     return data
+
 
 class LabelEncoder(object):
     """Label encoder for labels."""
+
     def __init__(self, class_to_index={}):
         self.class_to_index = class_to_index
         self.index_to_class = {v: k for k, v in self.class_to_index.items()}
@@ -87,44 +90,54 @@ class LabelEncoder(object):
         return classes
 
     def save(self, fp):
-        with open(fp, 'w') as fp:
-            contents = {'class_to_index': self.class_to_index}
+        with open(fp, "w") as fp:
+            contents = {"class_to_index": self.class_to_index}
             json.dump(contents, fp, indent=4, sort_keys=False)
 
     @classmethod
     def load(cls, fp):
-        with open(fp, 'r') as fp:
+        with open(fp, "r") as fp:
             kwargs = json.load(fp=fp)
         return cls(**kwargs)
-    
-def parse_url(url) :
+
+
+def parse_url(url):
     domain_name = tldextract.extract(url)[1]
     full_path = urlparse(url).path
-    first_tokens = re.split('[- _ % : , / \. \+ ]', full_path)
+    first_tokens = re.split("[- _ % : , / \. \+ ]", full_path)
     tokens = []
-    for token in first_tokens : 
-        tokens += re.split('\d+' , token) 
+    for token in first_tokens:
+        tokens += re.split("\d+", token)
     # return unique elements
     final_sentence = list(dict.fromkeys([domain_name] + tokens))
     return " ".join(final_sentence)
+
 
 def filter(l, include=[], exclude=[]):
     """Filter a list using inclusion and exclusion lists of items."""
     filtered = [item for item in l if item in include and item not in exclude]
     return filtered
 
+
 def iterative_train_test_split(X, y, train_size):
     """
-    Custom iterative train test split which 
-    maintains balanced representation with respect 
+    Custom iterative train test split which
+    maintains balanced representation with respect
     to order-th label combinations.'
     """
     stratifier = IterativeStratification(
-        n_splits=2, order=1, sample_distribution_per_fold=[1.0-train_size, train_size, ])
+        n_splits=2,
+        order=1,
+        sample_distribution_per_fold=[
+            1.0 - train_size,
+            train_size,
+        ],
+    )
     train_indices, test_indices = next(stratifier.split(X, y))
     X_train, y_train = X[train_indices], y[train_indices]
     X_test, y_test = X[test_indices], y[test_indices]
     return X_train, X_test, y_train, y_test
+
 
 def get_data_splits(data, train_size=0.7):
     # Get data
@@ -137,12 +150,11 @@ def get_data_splits(data, train_size=0.7):
     y = label_encoder.encode(y)
 
     # Split
-    X_train, X_, y_train, y_ = iterative_train_test_split(
-        X, y, train_size=train_size)
-    X_val, X_test, y_val, y_test = iterative_train_test_split(
-        X_, y_, train_size=0.5)
-    
+    X_train, X_, y_train, y_ = iterative_train_test_split(X, y, train_size=train_size)
+    X_val, X_test, y_val, y_test = iterative_train_test_split(X_, y_, train_size=0.5)
+
     return X_train, X_val, X_test, y_train, y_val, y_test, label_encoder
+
 
 def log_metrics(preds, labels):
     """

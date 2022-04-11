@@ -2,16 +2,18 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
+
 def loss_fn(outputs, labels):
     if labels is None:
         return None
     return nn.BCEWithLogitsLoss()(outputs, labels.float())
 
+
 def train_fn(data_loader, model, optimizer, device, scheduler):
-    '''
-        Modified from Abhishek Thakur's BERT example: 
-        https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
-    '''
+    """
+    Modified from Abhishek Thakur's BERT example:
+    https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
+    """
 
     train_loss = 0.0
     model.train()
@@ -33,13 +35,13 @@ def train_fn(data_loader, model, optimizer, device, scheduler):
         optimizer.step()
         scheduler.step()
     return train_loss
-    
+
 
 def eval_fn(data_loader, model, device):
-    '''
-        Modified from Abhishek Thakur's BERT example: 
-        https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
-    '''
+    """
+    Modified from Abhishek Thakur's BERT example:
+    https://github.com/abhishekkrthakur/bert-sentiment/blob/master/src/engine.py
+    """
     eval_loss = 0.0
     model.eval()
     fin_targets = []

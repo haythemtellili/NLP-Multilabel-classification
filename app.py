@@ -14,23 +14,23 @@ MODEL = None
 DEVICE = config.DEVICE
 label_encoder = LabelEncoder.load(config.LABEL_ENCODER_PATH)
 
+
 def url_prediction(url):
     tokenizer = config.TOKENIZER
     max_len = config.MAX_LEN
     url = str(url)
     url = " ".join(url.split())
     inputs = tokenizer.encode_plus(
-            url,
-            None,
-            add_special_tokens=True,
-            max_length=max_len,
-            pad_to_max_length=True,
-            truncation=True,
-        )
+        url,
+        None,
+        add_special_tokens=True,
+        max_length=max_len,
+        pad_to_max_length=True,
+        truncation=True,
+    )
 
     ids = inputs["input_ids"]
     mask = inputs["attention_mask"]
-
 
     ids = torch.tensor(ids, dtype=torch.long).unsqueeze(0)
     mask = torch.tensor(mask, dtype=torch.long).unsqueeze(0)
@@ -42,6 +42,7 @@ def url_prediction(url):
 
     outputs = torch.sigmoid(outputs).cpu().detach().numpy()
     return outputs
+
 
 @app.route("/predict")
 def predict():
@@ -57,10 +58,12 @@ def predict():
     }
     return flask.jsonify(response)
 
+
 if __name__ == "__main__":
     n_classes = len(label_encoder)
     MODEL = MultilabelClassifier(n_classes)
-    MODEL.load_state_dict(torch.load(config.MODEL_PATH, map_location=torch.device('cpu')))
-    MODEL.to(DEVICE)
+    MODEL.load_state_dict(
+        torch.load(config.MODEL_PATH, map_location=torch.device("cpu"))
+    )
     MODEL.eval()
     app.run(host="0.0.0.0", port="9999")
