@@ -1,3 +1,4 @@
+import json
 import logging
 import traceback
 import warnings
@@ -78,11 +79,12 @@ def run():
     model = nn.DataParallel(model)
 
     best_val_loss = 100
-    for epoch in tqdm(range(config.EPOCHS)):
+    for _ in tqdm(range(config.EPOCHS)):
         train_loss = train_fn(train_data_loader, model, optimizer, device, scheduler)
         eval_loss, preds, labels = eval_fn(valid_data_loader, model, device)
-        auc_score = log_metrics(preds, labels)["auc_micro"]
-        print("AUC score: ", auc_score)
+        performance = log_metrics(preds, labels)
+        print("Performance: ", performance)
+        
         avg_train_loss, avg_val_loss = train_loss / len(
             train_data_loader
         ), eval_loss / len(valid_data_loader)
@@ -94,6 +96,13 @@ def run():
             best_val_loss = avg_val_loss
             torch.save(model.module.state_dict(), config.MODEL_PATH)
             print("Model saved as current val_loss is: ", best_val_loss)
+
+    print("Start Testing and Finding Threshold")
+    _, preds, labels = eval_fn(test_data_loader, model, config.DEVICE)
+    testing_result = log_metrics(preds, labels)
+
+    with open("performance.json", "w") as fp:
+        json.dump(testing_result, fp)
 
 
 if __name__ == "__main__":

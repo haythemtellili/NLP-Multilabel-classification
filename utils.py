@@ -1,18 +1,14 @@
 import os
-import re
 import json
 import itertools
-import tldextract
 
 import numpy as np
 import pandas as pd
 from collections import Counter
-from urllib.parse import urlparse
 from sklearn import metrics
 from skmultilearn.model_selection import IterativeStratification
 
 import torch
-import torch.nn as nn
 
 
 def load_data(path_data):
@@ -37,8 +33,6 @@ def load_data(path_data):
 def preprocess_data(data, min_tag_freq=20):
     # Remove duplicated sample
     data = data[~data["url"].duplicated()].reset_index(drop=True)
-    # clean url
-    # data['url'] = data['url'].apply(lambda x : parse_url(x))
     # Filter tags that have fewer than <min_tag_freq> occurrences
     targets = [item for sublist in list(data["target"]) for item in sublist]
     d = Counter(targets)
@@ -100,19 +94,6 @@ class LabelEncoder(object):
             kwargs = json.load(fp=fp)
         return cls(**kwargs)
 
-
-def parse_url(url):
-    domain_name = tldextract.extract(url)[1]
-    full_path = urlparse(url).path
-    first_tokens = re.split("[- _ % : , / \. \+ ]", full_path)
-    tokens = []
-    for token in first_tokens:
-        tokens += re.split("\d+", token)
-    # return unique elements
-    final_sentence = list(dict.fromkeys([domain_name] + tokens))
-    return " ".join(final_sentence)
-
-
 def filter(l, include=[], exclude=[]):
     """Filter a list using inclusion and exclusion lists of items."""
     filtered = [item for item in l if item in include and item not in exclude]
@@ -155,17 +136,26 @@ def get_data_splits(data, train_size=0.7):
 
     return X_train, X_val, X_test, y_train, y_val, y_test, label_encoder
 
+# Determining the best threshold
+def find_best_threshold(y_true, y_prob):
+    """Find the best threshold for maximum F1."""
+    precisions, recalls, thresholds = metrics.precision_recall_curve(y_true, y_prob)
+    f1s = (2 * precisions * recalls) / (precisions + recalls)
+    return thresholds[np.argmax(f1s)]
 
+# Calculate metrics
 def log_metrics(preds, labels):
-    """
-    Function to calculate AUC
-    """
-    preds = torch.stack(preds)
-    preds = preds.cpu().detach().numpy()
-    labels = torch.stack(labels)
-    labels = labels.cpu().detach().numpy()
-
-    fpr_micro, tpr_micro, _ = metrics.roc_curve(labels.ravel(), preds.ravel())
+    y_pred = torch.stack(preds).cpu().detach().numpy()
+    y_true = torch.stack(labels).cpu().detach().numpy()
+    # Find the best threshold for maximum F1
+    threshold = find_best_threshold(y_true.ravel(), y_pred.ravel())
+    # Determine predictions using threshold
+    predictions = np.array([np.where(prob >= threshold, 1, 0) for prob in y_pred])
+    # Calculate metrics
+    result = metrics.precision_recall_fscore_support(y_true, predictions, average="weighted")
+    fpr_micro, tpr_micro, _ = metrics.roc_curve(y_true.ravel(), y_pred.ravel())
     auc_micro = metrics.auc(fpr_micro, tpr_micro)
 
-    return {"auc_micro": auc_micro}
+    performance = {"Threshold": threshold, "Precision": result[0], "Recall": result[1], "F1 score": result[2], "AUC score": auc_micro}
+
+    return performance
