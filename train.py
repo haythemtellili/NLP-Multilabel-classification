@@ -34,11 +34,11 @@ def run():
         os.makedirs(config.PATH_MODELS)
     # Save Label encoder
     label_encoder.save(os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH))
-
+    # Create datasets
     train_dataset = MultilabelDataset(X_train.tolist(), y_train.tolist())
     valid_dataset = MultilabelDataset(X_val.tolist(), y_val.tolist())
     test_dataset = MultilabelDataset(X_test.tolist(), y_test.tolist())
-    # Create DataLaoders for train / val / test
+    # Create DataLaoders 
     train_data_loader = DataLoader(
         train_dataset, batch_size=config.TRAIN_BATCH_SIZE, shuffle=True, num_workers=2
     )
@@ -52,7 +52,7 @@ def run():
     print("Length of Train Dataloader: ", len(train_data_loader))
     print("Length of Valid Dataloader: ", len(valid_data_loader))
     print("Length of Test Dataloader: ", len(test_data_loader))
-
+    # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # Init the model
     n_labels = y_train.shape[1]
