@@ -16,7 +16,6 @@ from dataset import MultilabelDataset
 from model import MultilabelClassifier
 from utils import load_data, preprocess_data, get_data_splits, log_metrics
 
-
 def run():
     # Load data
     data = load_data(config.PATH_DATA)
@@ -84,7 +83,7 @@ def run():
         eval_loss, preds, labels = eval_fn(valid_data_loader, model, device)
         performance = log_metrics(preds, labels)
         print("Performance: ", performance)
-        
+
         avg_train_loss, avg_val_loss = train_loss / len(
             train_data_loader
         ), eval_loss / len(valid_data_loader)
@@ -100,9 +99,10 @@ def run():
     print("Start Testing and Finding Threshold")
     _, preds, labels = eval_fn(test_data_loader, model, config.DEVICE)
     testing_result = log_metrics(preds, labels)
-
-    with open("performance.json", "w") as fp:
-        json.dump(testing_result, fp)
+    print("Performance on the testing data: ", testing_result)
+    
+    with open('performance.txt', 'w') as file:
+        file.write(json.dumps(str(testing_result)))
 
 
 if __name__ == "__main__":
