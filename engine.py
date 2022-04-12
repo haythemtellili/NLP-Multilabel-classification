@@ -30,7 +30,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler, class_weights):
         optimizer.zero_grad()
         outputs = model(ids=ids, mask=mask)
 
-        loss = loss_fn(outputs, targets, class_weights)
+        loss = loss_fn(outputs, targets, class_weights, device)
         loss.backward()
         train_loss += loss.item()
         optimizer.step()
@@ -57,7 +57,7 @@ def eval_fn(data_loader, model, device, class_weights):
             targets = targets.to(device, dtype=torch.float)
 
             outputs = model(ids=ids, mask=mask)
-            loss = loss_fn(outputs, targets, class_weights)
+            loss = loss_fn(outputs, targets, class_weights, device)
             eval_loss += loss.item()
             fin_targets.extend(targets)
             fin_outputs.extend(torch.sigmoid(outputs))
