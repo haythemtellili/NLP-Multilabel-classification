@@ -1,15 +1,13 @@
 import torch
 import torch.nn as nn
 
-import numpy as np
 from tqdm import tqdm
 
 
-def loss_fn(outputs, labels, class_weights, device):
-    class_weights_tensor = torch.Tensor(np.array(list(class_weights.values()))).to(device)
+def loss_fn(outputs, labels):
     if labels is None:
         return None
-    return nn.BCEWithLogitsLoss(weight=class_weights_tensor)(outputs, labels.float())
+    return nn.BCEWithLogitsLoss()(outputs, labels.float())
 
 
 def train_fn(data_loader, model, optimizer, device, scheduler, class_weights):
@@ -30,7 +28,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler, class_weights):
         optimizer.zero_grad()
         outputs = model(ids=ids, mask=mask)
 
-        loss = loss_fn(outputs, targets, class_weights, device)
+        loss = loss_fn(outputs, targets, device)
         loss.backward()
         train_loss += loss.item()
         optimizer.step()
@@ -38,7 +36,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler, class_weights):
     return train_loss
 
 
-def eval_fn(data_loader, model, device, class_weights):
+def eval_fn(data_loader, model, device):
     """
     Function to evaluate the model
     """
@@ -57,7 +55,7 @@ def eval_fn(data_loader, model, device, class_weights):
             targets = targets.to(device, dtype=torch.float)
 
             outputs = model(ids=ids, mask=mask)
-            loss = loss_fn(outputs, targets, class_weights, device)
+            loss = loss_fn(outputs, targets, device)
             eval_loss += loss.item()
             fin_targets.extend(targets)
             fin_outputs.extend(torch.sigmoid(outputs))
