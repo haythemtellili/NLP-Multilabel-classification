@@ -10,7 +10,7 @@ def loss_fn(outputs, labels):
     return nn.BCEWithLogitsLoss()(outputs, labels.float())
 
 
-def train_fn(data_loader, model, optimizer, device, scheduler, class_weights):
+def train_fn(data_loader, model, optimizer, device, scheduler):
     """
     Function to train the model
     """
