@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import traceback
@@ -17,6 +18,8 @@ from model import MultilabelClassifier
 from utils import load_data, preprocess_data, get_data_splits, log_metrics
 
 def run():
+    """ Main function to excute the pipeline of training """
+    
     # Load data
     data = load_data(config.PATH_DATA)
     # Preprocess data
@@ -25,12 +28,16 @@ def run():
     X_train, X_val, X_test, y_train, y_val, y_test, label_encoder = get_data_splits(
         data
     )
-    label_encoder.save(config.LABEL_ENCODER_PATH)
+    # Create models directory
+    if not os.path.exists(config.PATH_MODELS):
+        os.makedirs(config.PATH_MODELS)
+    # Save Label encoder
+    label_encoder.save(os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH))
 
     train_dataset = MultilabelDataset(X_train.tolist(), y_train.tolist())
     valid_dataset = MultilabelDataset(X_val.tolist(), y_val.tolist())
     test_dataset = MultilabelDataset(X_test.tolist(), y_test.tolist())
-
+    # Create DataLaoders for train / val / test
     train_data_loader = DataLoader(
         train_dataset, batch_size=config.TRAIN_BATCH_SIZE, shuffle=True, num_workers=2
     )
@@ -46,10 +53,10 @@ def run():
     print("Length of Test Dataloader: ", len(test_data_loader))
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    # Init the model
     n_labels = y_train.shape[1]
     model = MultilabelClassifier(n_labels)
-
+    # Set the optimizer and the scheduler
     param_optimizer = list(model.named_parameters())
     no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
     optimizer_parameters = [
@@ -76,7 +83,7 @@ def run():
 
     model.to(device)
     model = nn.DataParallel(model)
-
+    # start training 
     best_val_loss = 100
     for _ in tqdm(range(config.EPOCHS)):
         train_loss = train_fn(train_data_loader, model, optimizer, device, scheduler)
@@ -93,14 +100,14 @@ def run():
 
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            torch.save(model.module.state_dict(), config.MODEL_PATH)
+            torch.save(model.module.state_dict(), os.path.join(config.PATH_MODELS, config.BERT_PATH))
             print("Model saved as current val_loss is: ", best_val_loss)
 
     print("Start Testing and Finding Threshold")
     _, preds, labels = eval_fn(test_data_loader, model, config.DEVICE)
     testing_result = log_metrics(preds, labels)
     print("Performance on the testing data: ", testing_result)
-    
+    # Save result of testing data with the optimal threshold
     with open('performance.txt', 'w') as file:
         file.write(json.dumps(testing_result))
 
