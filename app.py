@@ -1,8 +1,10 @@
-import config
+import os
 import torch
 import flask
 import numpy as np
 from flask import Flask, request
+
+import config
 from utils import LabelEncoder
 from model import MultilabelClassifier
 
@@ -11,7 +13,7 @@ app = Flask(__name__)
 
 MODEL = None
 DEVICE = config.DEVICE
-label_encoder = LabelEncoder.load(config.LABEL_ENCODER_PATH)
+label_encoder = LabelEncoder.load(os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH))
 
 
 def url_prediction(url):
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     n_classes = len(label_encoder)
     MODEL = MultilabelClassifier(n_classes)
     MODEL.load_state_dict(
-        torch.load(config.MODEL_PATH, map_location=torch.device("cpu"))
+        torch.load(os.path.join(config.PATH_MODELS, config.BERT_PATH), map_location=torch.device("cpu"))
     )
     MODEL.to(DEVICE)
     MODEL.eval()

@@ -12,6 +12,6 @@ DISTILBERT_PATH = "distilbert-base-multilingual-cased"
 TOKENIZER = transformers.DistilBertTokenizer.from_pretrained(
     "distilbert-base-multilingual-cased"
 )
-BERT_PATH = "best_model.ptbest_model.pt"
-LABEL_ENCODER_PATH = "best_model.ptlabel_encoder.json"
+BERT_PATH = "best_model.pt"
+LABEL_ENCODER_PATH = "label_encoder.json"
 THRESHOLD = 0.29
