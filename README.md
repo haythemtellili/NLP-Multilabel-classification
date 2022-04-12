@@ -44,7 +44,7 @@ Result will be saved in performance.txt file.
 ## Final result:
 Metrics used are: F1 score, Precision, Recall and AUC.
 
-| #F1 score | #Recall | #Precision  |
+| F1 score| Recall    |Precision  |
 | :-----: | :-: | :-: |
-| Seconds | 301 | 283 |
+| 0.4929 | 0.511 | 283 |0.5117
  
