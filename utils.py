@@ -31,7 +31,7 @@ def load_data(path_data):
     return df_data
 
 
-def preprocess_data(data, min_tag_freq=20):
+def preprocess_data(data, min_tag_freq=3):
     # Remove duplicated sample
     data = data[~data["url"].duplicated()].reset_index(drop=True)
     # Filter tags that have fewer than <min_tag_freq> occurrences
