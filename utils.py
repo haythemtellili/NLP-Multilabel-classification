@@ -156,6 +156,6 @@ def log_metrics(preds, labels):
     fpr_micro, tpr_micro, _ = metrics.roc_curve(y_true.ravel(), y_pred.ravel())
     auc_micro = metrics.auc(fpr_micro, tpr_micro)
 
-    performance = {"Threshold": threshold, "Precision": result[0], "Recall": result[1], "F1 score": result[2], "AUC score": auc_micro}
+    performance = {"Threshold": str(threshold), "Precision": str(result[0]), "Recall": str(result[1]), "F1 score": str(result[2]), "AUC score": str(auc_micro),}
 
     return performance

@@ -102,7 +102,7 @@ def run():
     print("Performance on the testing data: ", testing_result)
     
     with open('performance.txt', 'w') as file:
-        file.write(json.dumps(str(testing_result)))
+        file.write(json.dumps(testing_result))
 
 
 if __name__ == "__main__":
