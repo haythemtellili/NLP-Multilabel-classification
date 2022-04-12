@@ -5,7 +5,7 @@ _SUCCESS
 *.pt
 *.json
 # model
-model
+models
 # Environments
 .env
 .venv
