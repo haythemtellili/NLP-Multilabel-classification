@@ -4,6 +4,8 @@ _SUCCESS
 # pt extensions
 *.pt
 *.json
+# model
+model
 # Environments
 .env
 .venv
