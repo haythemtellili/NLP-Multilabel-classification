@@ -1,5 +1,6 @@
 import os
 import json
+import random
 import itertools
 
 import numpy as np
@@ -159,3 +160,11 @@ def log_metrics(preds, labels):
     performance = {"Threshold": str(threshold), "Precision": str(result[0]), "Recall": str(result[1]), "F1 score": str(result[2]), "AUC score": str(auc_micro),}
 
     return performance
+
+def set_seeds(seed=1234):
+    """Set seeds for reproducibility."""
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed) # multi-GPU

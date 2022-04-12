@@ -15,11 +15,12 @@ import config
 from engine import train_fn, eval_fn
 from dataset import MultilabelDataset
 from model import MultilabelClassifier
-from utils import load_data, preprocess_data, get_data_splits, log_metrics
+from utils import load_data, preprocess_data, get_data_splits, log_metrics, set_seeds
 
 def run():
     """ Main function to excute the pipeline of training """
-    
+    # Set seeds
+    set_seeds()
     # Load data
     data = load_data(config.PATH_DATA)
     # Preprocess data
