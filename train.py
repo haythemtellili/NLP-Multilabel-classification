@@ -1,8 +1,10 @@
 import os
 import json
 import logging
+import itertools
 import traceback
 import warnings
+import numpy as np
 from tqdm import tqdm
 
 import torch
@@ -84,11 +86,15 @@ def run():
 
     model.to(device)
     model = nn.DataParallel(model)
+    # Define Class weights
+    train_tags = list(itertools.chain.from_iterable(data.target.values))
+    counts = np.bincount([label_encoder.class_to_index[class_] for class_ in train_tags])
+    class_weights = {i: 1.0/count for i, count in enumerate(counts)}
     # start training 
     best_val_loss = 100
     for _ in tqdm(range(config.EPOCHS)):
-        train_loss = train_fn(train_data_loader, model, optimizer, device, scheduler)
-        eval_loss, preds, labels = eval_fn(valid_data_loader, model, device)
+        train_loss = train_fn(train_data_loader, model, optimizer, device, scheduler, class_weights)
+        eval_loss, preds, labels = eval_fn(valid_data_loader, model, device, class_weights)
         performance = log_metrics(preds, labels)
         print("Performance: ", performance)
 
