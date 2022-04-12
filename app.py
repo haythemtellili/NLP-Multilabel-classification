@@ -1,7 +1,6 @@
 import config
 import torch
 import flask
-import time
 import numpy as np
 from flask import Flask, request
 from utils import LabelEncoder
@@ -47,14 +46,12 @@ def url_prediction(url):
 @app.route("/predict")
 def predict():
     url = request.args.get("url")
-    start_time = time.time()
     output = url_prediction(url)
     result = np.array([np.where(prob >= config.THRESHOLD, 1, 0) for prob in output])
     response = {}
     response["response"] = {
         "tags": str(label_encoder.decode([result[0]])[0]),
         "url": str(url),
-        "time_taken": str(time.time() - start_time),
     }
     return flask.jsonify(response)
 
