@@ -46,5 +46,5 @@ Metrics used are: F1 score, Precision, Recall and AUC.
 
 | F1 score| Recall    |Precision  |
 | :-----: | :-: | :-: |
-| 0.4929 | 0.511 | 283 |0.5117
+| 0.4929 | 0.5111 | 0.5117 |
  
