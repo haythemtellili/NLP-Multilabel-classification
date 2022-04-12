@@ -12,8 +12,8 @@ Prerequisites:
  2. Create conda environment: `conda create -n adot python=3.8`
  3. Install the necessary packages: `pip3 install -r requirements.txt`
  ## Testing the Flask API
- In this step, we need to download the trained model with the label encoder and put them in a models directory.
- You can Donload them from this link.
+ In this step, we need to download the trained model with the label encoder and put them in a models directory.\
+ Both are available [here](https://drive.google.com/drive/folders/1gSifqnsZU_MybP5MFMAg_r0CNAVFxf2v?usp=sharing).
  
  Start the service using the following command:
   ```bash
@@ -24,12 +24,12 @@ Example to test the Flask API from the terminal:
  curl -v http://127.0.0.1:9999/predict?url=https://dictionnaire.reverso.net/francais-arabe/
  ```
  ## Training
-To train the model from scratch, we just need to train the following command:
+To train the model, we just need to run the following command:
   ```bash
  python train.py
  ```
-During training, we evaluate the performance of the model, By the end of training we test the model using Testing Data. 
-Result will be saved in performance.txt file.
+During training, we evaluate the performance of the model, By the end of training we test the model using Testing Data.\
+Results will be saved in performance.txt file.
  
  # Approach
  
