@@ -5,8 +5,8 @@ import numpy as np
 from tqdm import tqdm
 
 
-def loss_fn(outputs, labels, class_weights):
-    class_weights_tensor = torch.Tensor(np.array(list(class_weights.values())))
+def loss_fn(outputs, labels, class_weights, device):
+    class_weights_tensor = torch.Tensor(np.array(list(class_weights.values()))).to(device)
     if labels is None:
         return None
     return nn.BCEWithLogitsLoss(weight=class_weights_tensor)(outputs, labels.float())
