@@ -36,12 +36,20 @@ Results will be saved in performance.txt file.
  
  Our approach consist of:
  
- 1. Preprocessing: In this step, We clean our data by removing duplicates, Filter categories that have fewer than <min_tag_freq> occurrences.
- 2. Validation strategy: iterative train test split which maintains balanced representation . 
- 3. Train `distilbert-base-multilingual-cased` model since the url can contain different languages.
- 4. Validate the model after each epoch.
- 5. Testing the model and finding the optimal threshold to be used for the REST API.
-
+ 1. Preprocessing: In this step, We clean our data by removing duplicates, Filter categories that have fewer than <min_tag_freq> occurrences.\
+ (We tried to clean up the url by removing stop words, digits and extracting only the words, but that doesn't help because the bert-based models were trained on real data containing urls).
+ 3. Validation strategy: Iterative train test split which maintains balanced representation . 
+ 4. Train `distilbert-base-multilingual-cased` model since the url can contain different languages.
+ 5. Validate the model after each epoch.
+ 6. Testing the model and finding the best threshold for f1 to be used for the REST API.
+## Improvements
+1. The data is unbalanced, so we can handle this by using weighted loss, oversampling the data for categories that have less than <min_tag_freq> occurrences.
+2. Extract information from the web page using URLs to help the model generalize better.
+3. Experiment with other language models.
+4. Add rules to improve the quality of results (kind of post processing ..).
+5. Determine the threshold per label.
+6. Integrate MLflow to track different experiments.
+7. Set up CI pipeline.
 ## Final result:
 Metrics used are: F1 score, Precision, Recall and AUC.
 
