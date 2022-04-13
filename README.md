@@ -47,9 +47,9 @@ Results will be saved in performance.txt file.
 2. Extract information from the web page using URLs to help the model generalize better.
 3. Experiment with other language models.
 4. Add rules to improve the quality of results (kind of post processing ..).
-5. Determine the threshold per label.
-6. Integrate MLflow to track different experiments.
-7. Set up CI pipeline.
+6. Evaluate each class separately and determine the threshold per label.
+7. Integrate MLflow to track different experiments.
+8. Set up CI pipeline.
 ## Final result:
 Metrics used are: F1 score, Precision, Recall and AUC.
 
