@@ -32,6 +32,10 @@ def load_data(path_data):
 
 
 def preprocess_data(data, min_tag_freq=3):
+    '''
+    Takes in loaded data, 
+    returns cleaned data.
+    '''
     # Remove duplicated sample
     data = data[~data["url"].duplicated()].reset_index(drop=True)
     # Filter tags that have fewer than <min_tag_freq> occurrences
@@ -49,7 +53,7 @@ def preprocess_data(data, min_tag_freq=3):
 
 
 class LabelEncoder(object):
-    """Label encoder for labels."""
+    """Label encoder class to help us encode and decode labels"""
 
     def __init__(self, class_to_index={}):
         self.class_to_index = class_to_index
@@ -122,7 +126,16 @@ def iterative_train_test_split(X, y, train_size):
 
 
 def get_data_splits(data, train_size=0.7):
-    # Get data
+     '''
+    Returns splitted data into train/val/test.
+
+            Parameters:
+                    data (DataFrame)
+                    train_size (float)
+
+            Returns:
+                    X_train, X_val, X_test, y_train, y_val, y_test, label_encoder
+    '''
     X = data.url.to_numpy()
     y = data.target
 
@@ -146,6 +159,12 @@ def find_best_threshold(y_true, y_prob):
 
 # Calculate metrics
 def log_metrics(preds, labels):
+    '''
+    Takes in a number predictions and labels, 
+    returns dict contain 
+    Threshold, F1 score
+    Precision, Recall and AUC
+    '''
     y_pred = torch.stack(preds).cpu().detach().numpy()
     y_true = torch.stack(labels).cpu().detach().numpy()
     # Find the best threshold for maximum F1
