@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 
 def loss_fn(outputs, labels):
+    """Takes in outputs of the models and labels, returns BCEWithLogitsLoss"""
     if labels is None:
         return None
     return nn.BCEWithLogitsLoss()(outputs, labels.float())
@@ -12,7 +13,7 @@ def loss_fn(outputs, labels):
 
 def train_fn(data_loader, model, optimizer, device, scheduler):
     """
-    Function to train the model
+    Function to train the model, returns traning loss
     """
     train_loss = 0.0
     model.train()

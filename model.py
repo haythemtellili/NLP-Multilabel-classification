@@ -4,6 +4,17 @@ import torch.nn as nn
 
 
 class MultilabelClassifier(nn.Module):
+    """
+    A class to initiate the DistilBert model.
+
+    ...
+
+    Attributes
+    ----------
+    n_classes : int
+    Number of labels used
+    """
+
     def __init__(self, n_classes):
         super(MultilabelClassifier, self).__init__()
 

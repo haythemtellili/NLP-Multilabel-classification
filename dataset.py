@@ -3,6 +3,17 @@ import torch
 
 
 class MultilabelDataset:
+    """
+    A class to create Dataset.
+
+    ...
+
+    Attributes
+    ----------
+    urls : list of strings
+    labels : list of integers
+    """
+
     def __init__(self, urls, labels):
         self.urls = urls
         self.labels = labels

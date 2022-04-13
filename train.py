@@ -19,8 +19,9 @@ from dataset import MultilabelDataset
 from model import MultilabelClassifier
 from utils import load_data, preprocess_data, get_data_splits, log_metrics, set_seeds
 
+
 def run():
-    """ Main function to excute the pipeline of training """
+    """Main function to excute the pipeline of training"""
     # Set seeds
     set_seeds()
     # Load data
@@ -40,7 +41,7 @@ def run():
     train_dataset = MultilabelDataset(X_train.tolist(), y_train.tolist())
     valid_dataset = MultilabelDataset(X_val.tolist(), y_val.tolist())
     test_dataset = MultilabelDataset(X_test.tolist(), y_test.tolist())
-    # Create DataLaoders 
+    # Create DataLaoders
     train_data_loader = DataLoader(
         train_dataset, batch_size=config.TRAIN_BATCH_SIZE, shuffle=True, num_workers=2
     )
@@ -86,7 +87,7 @@ def run():
 
     model.to(device)
     model = nn.DataParallel(model)
-    # start training 
+    # start training
     best_val_loss = 100
     for _ in tqdm(range(config.EPOCHS)):
         train_loss = train_fn(train_data_loader, model, optimizer, device, scheduler)
@@ -103,7 +104,10 @@ def run():
 
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            torch.save(model.module.state_dict(), os.path.join(config.PATH_MODELS, config.BERT_PATH))
+            torch.save(
+                model.module.state_dict(),
+                os.path.join(config.PATH_MODELS, config.BERT_PATH),
+            )
             print("Model saved as current val_loss is: ", best_val_loss)
 
     print("Start Testing and Finding Threshold")
@@ -111,7 +115,7 @@ def run():
     testing_result = log_metrics(preds, labels)
     print("Performance on the testing data: ", testing_result)
     # Save result of testing data with the optimal threshold
-    with open('performance.txt', 'w') as file:
+    with open("performance.txt", "w") as file:
         file.write(json.dumps(testing_result))
 
 

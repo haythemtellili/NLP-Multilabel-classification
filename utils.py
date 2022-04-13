@@ -32,10 +32,10 @@ def load_data(path_data):
 
 
 def preprocess_data(data, min_tag_freq=3):
-    '''
-    Takes in loaded data, 
+    """
+    Takes in loaded data,
     returns cleaned data.
-    '''
+    """
     # Remove duplicated sample
     data = data[~data["url"].duplicated()].reset_index(drop=True)
     # Filter tags that have fewer than <min_tag_freq> occurrences
@@ -99,6 +99,7 @@ class LabelEncoder(object):
             kwargs = json.load(fp=fp)
         return cls(**kwargs)
 
+
 def filter(l, include=[], exclude=[]):
     """Filter a list using inclusion and exclusion lists of items."""
     filtered = [item for item in l if item in include and item not in exclude]
@@ -122,11 +123,12 @@ def iterative_train_test_split(X, y, train_size):
     train_indices, test_indices = next(stratifier.split(X, y))
     X_train, y_train = X[train_indices], y[train_indices]
     X_test, y_test = X[test_indices], y[test_indices]
+
     return X_train, X_test, y_train, y_test
 
 
 def get_data_splits(data, train_size=0.7):
-     '''
+    """
     Returns splitted data into train/val/test.
 
             Parameters:
@@ -135,7 +137,7 @@ def get_data_splits(data, train_size=0.7):
 
             Returns:
                     X_train, X_val, X_test, y_train, y_val, y_test, label_encoder
-    '''
+    """
     X = data.url.to_numpy()
     y = data.target
 
@@ -150,6 +152,7 @@ def get_data_splits(data, train_size=0.7):
 
     return X_train, X_val, X_test, y_train, y_val, y_test, label_encoder
 
+
 # Determining the best threshold
 def find_best_threshold(y_true, y_prob):
     """Find the best threshold for maximum F1."""
@@ -157,14 +160,15 @@ def find_best_threshold(y_true, y_prob):
     f1s = (2 * precisions * recalls) / (precisions + recalls)
     return thresholds[np.argmax(f1s)]
 
+
 # Calculate metrics
 def log_metrics(preds, labels):
-    '''
-    Takes in a number predictions and labels, 
-    returns dict contain 
+    """
+    Takes in predictions and labels,
+    returns dict contain
     Threshold, F1 score
     Precision, Recall and AUC
-    '''
+    """
     y_pred = torch.stack(preds).cpu().detach().numpy()
     y_true = torch.stack(labels).cpu().detach().numpy()
     # Find the best threshold for maximum F1
@@ -172,13 +176,22 @@ def log_metrics(preds, labels):
     # Determine predictions using threshold
     predictions = np.array([np.where(prob >= threshold, 1, 0) for prob in y_pred])
     # Calculate metrics
-    result = metrics.precision_recall_fscore_support(y_true, predictions, average="weighted")
+    result = metrics.precision_recall_fscore_support(
+        y_true, predictions, average="weighted"
+    )
     fpr_micro, tpr_micro, _ = metrics.roc_curve(y_true.ravel(), y_pred.ravel())
     auc_micro = metrics.auc(fpr_micro, tpr_micro)
 
-    performance = {"Threshold": str(threshold), "Precision": str(result[0]), "Recall": str(result[1]), "F1 score": str(result[2]), "AUC score": str(auc_micro),}
+    performance = {
+        "Threshold": str(threshold),
+        "Precision": str(result[0]),
+        "Recall": str(result[1]),
+        "F1 score": str(result[2]),
+        "AUC score": str(auc_micro),
+    }
 
     return performance
+
 
 def set_seeds(seed=1234):
     """Set seeds for reproducibility."""
@@ -186,4 +199,4 @@ def set_seeds(seed=1234):
     random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed) # multi-GPU
+    torch.cuda.manual_seed_all(seed)  # multi-GPU

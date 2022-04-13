@@ -13,10 +13,13 @@ app = Flask(__name__)
 
 MODEL = None
 DEVICE = config.DEVICE
-label_encoder = LabelEncoder.load(os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH))
+label_encoder = LabelEncoder.load(
+    os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH)
+)
 
 
 def url_prediction(url):
+    """Funcion that takes a url and return prediction"""
     tokenizer = config.TOKENIZER
     max_len = config.MAX_LEN
     url = str(url)
@@ -62,7 +65,10 @@ if __name__ == "__main__":
     n_classes = len(label_encoder)
     MODEL = MultilabelClassifier(n_classes)
     MODEL.load_state_dict(
-        torch.load(os.path.join(config.PATH_MODELS, config.BERT_PATH), map_location=torch.device("cpu"))
+        torch.load(
+            os.path.join(config.PATH_MODELS, config.BERT_PATH),
+            map_location=torch.device("cpu"),
+        )
     )
     MODEL.to(DEVICE)
     MODEL.eval()
