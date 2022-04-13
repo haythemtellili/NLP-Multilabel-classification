@@ -36,7 +36,7 @@ Results will be saved in performance.txt file.
  
  Our approach consist of:
  
- 1. Preprocessing: In this step, We clean our data by removing duplicates, Filter categories that have fewer than <min_tag_freq> occurrences.\
+ 1. Preprocessing: In this step, We clean our data by removing duplicates, Filter categories that have fewer than 3 occurrences.\
  (We tried to clean up the url by removing stop words, digits and extracting only the words, but that doesn't help because the bert-based models were pre-trained on real data containing urls so they learned how to handle them properly).
  3. Validation strategy: Iterative train test split which maintains balanced representation . 
  4. Train `distilbert-base-multilingual-cased` model since the url can contain different languages.
@@ -53,7 +53,7 @@ Results will be saved in performance.txt file.
 ## Final result:
 Metrics used are: F1 score, Precision, Recall and AUC.
 
-| F1 score| Recall    |Precision  |
-| :-----: | :-: | :-: |
-| 0.4929 | 0.5111 | 0.5117 |
+| F1 score| Recall    |Precision  |AUC|
+| :-----: | :-: | :-: |:-: 
+| 0.47531835838544656 | 0.5008549121397524 | 0.49137788420214845 |0.9758651239487387
  
