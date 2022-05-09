@@ -1,7 +1,12 @@
 # Multilabel-classification-NLP
 This repository contains a multi-label classifier that takes as input a web url and send back a list of categories for the URL. 
- 1. src folder contain the code used
- 2. tests folder contain unit tests 
+
+This project show you how to:
+
+* Train Distilbert-BERT, using huggingface and Pytorch for multilabel task.
+* Unit testing to ensure that all code meets quality standards before it's deployed.
+* Deploy the Distilbert-BERT model for inference using Amazon sagemaker.
+
 # Getting started
 Prerequisites: 
 
