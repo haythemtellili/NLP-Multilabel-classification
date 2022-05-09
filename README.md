@@ -9,8 +9,8 @@ Prerequisites:
  
  # Usage
  1. Clone this repo: `git clone https://github.com/haythemtellili/Multilabel-classification-NLP.git`
- 2. Create conda environment: `conda create -n adot python=3.8`
- 3. Activate the environment: `conda activate adot`
+ 2. Create conda environment: `conda create -n env python=3.8`
+ 3. Activate the environment: `conda activate env`
  4. Install the necessary packages: `pip3 install -r requirements.txt`
  ## Testing the Flask API
  In this step, we need to download the trained model with the label encoder and put them in a models directory.\
