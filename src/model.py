@@ -1,6 +1,6 @@
-import config
 import transformers
 import torch.nn as nn
+import config as config
 
 
 class MultilabelClassifier(nn.Module):

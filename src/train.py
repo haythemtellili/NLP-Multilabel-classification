@@ -1,10 +1,8 @@
 import os
 import json
 import logging
-import itertools
 import traceback
 import warnings
-import numpy as np
 from tqdm import tqdm
 
 import torch
@@ -13,7 +11,7 @@ from torch.utils.data import DataLoader
 from transformers import AdamW
 from transformers import get_linear_schedule_with_warmup
 
-import config
+import config as config
 from engine import train_fn, eval_fn
 from dataset import MultilabelDataset
 from model import MultilabelClassifier

@@ -4,18 +4,27 @@ import flask
 import numpy as np
 from flask import Flask, request
 
-import config
+import config as config
 from utils import LabelEncoder
 from model import MultilabelClassifier
 
 
 app = Flask(__name__)
 
-MODEL = None
 DEVICE = config.DEVICE
 label_encoder = LabelEncoder.load(
     os.path.join(config.PATH_MODELS, config.LABEL_ENCODER_PATH)
 )
+n_classes = len(label_encoder)
+MODEL = MultilabelClassifier(n_classes)
+MODEL.load_state_dict(
+    torch.load(
+        os.path.join(config.PATH_MODELS, config.BERT_PATH),
+        map_location=torch.device("cpu"),
+    )
+)
+MODEL.to(DEVICE)
+MODEL.eval()
 
 
 def url_prediction(url):
@@ -43,12 +52,11 @@ def url_prediction(url):
     mask = mask.to(DEVICE, dtype=torch.long)
 
     outputs = MODEL(ids=ids, mask=mask)
-
     outputs = torch.sigmoid(outputs).cpu().detach().numpy()
     return outputs
 
 
-@app.route("/predict")
+@app.route("/predict", methods=["GET", "POST"])
 def predict():
     url = request.args.get("url")
     output = url_prediction(url)
@@ -62,14 +70,5 @@ def predict():
 
 
 if __name__ == "__main__":
-    n_classes = len(label_encoder)
-    MODEL = MultilabelClassifier(n_classes)
-    MODEL.load_state_dict(
-        torch.load(
-            os.path.join(config.PATH_MODELS, config.BERT_PATH),
-            map_location=torch.device("cpu"),
-        )
-    )
-    MODEL.to(DEVICE)
-    MODEL.eval()
+
     app.run(host="0.0.0.0", port="9999")
